@@ -1,0 +1,1 @@
+provengo run BookStoreDemo --before="python reset.py" #| Select-String -Pattern ">>" -SimpleMatch
