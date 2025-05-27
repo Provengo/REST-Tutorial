@@ -8,4 +8,4 @@ bthread("User API", function () {
   verifyUserDoesNotExist(222, "Jane Doe");
   addUser(222, "John Doe");
   verifyUserExists(222, "John Doe");
-});
+}); 
