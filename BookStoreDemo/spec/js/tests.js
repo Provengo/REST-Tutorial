@@ -23,19 +23,44 @@ switch (stage) {
     });
 
   case "PARALLEL":
-    // A parallel story for a library loan system
-    bthread("Loan API", function () {
-      addUser(100, "John Doe");
-      addUser(101, "Jane Smith");
-      addBook(200, "The Great Gatsby");
-      addLoan(100, 200);
-      tryToDeleteNonExistentBookOrInLoan(200, "The Great Gatsby");
-      tryToAddExistingLoan(100, 200);
-      tryToDeleteNonExistentUserOrInLoan(100, "John Doe");
 
+    bthread("Librarian", function () {
+      waitForAnyUserAdded();
+      waitForAnyUserAdded();
+      addBook(201, "The Great Gatsby");
+      addBook(202, "1984");
     });
 
-    // Verify the user exists after being added
+    bthread("John's Loan", function () {
+      addUser(100, "John Doe");
+      book = waitForAnyBookAdded();
+      addLoan(100, book.id);
+      tryToDeleteNonExistentBookOrInLoan(book.id, book.title);
+      tryToAddExistingLoan(100, book.id);
+      tryToDeleteNonExistentUserOrInLoan(100, "John Doe");
+      deleteLoan(100, book.id);
+      verifyLoanDoesNotExist(100, book.id);
+      deleteUser(100, "John Doe");
+      verifyUserDoesNotExist(100, "John Doe");
+    });
+
+    bthread("Jane's Loan", function () {
+      addUser(101, "Jane Smith");
+      book = waitForAnyBookAdded();
+      addLoan(101, book.id);
+      tryToDeleteNonExistentBookOrInLoan(book.id, book.title);
+      tryToAddExistingLoan(101, book.id);
+      tryToDeleteNonExistentUserOrInLoan(101, "Jane Smith");
+      deleteLoan(101, book.id);
+      deleteUser(101, "Jane Smith");
+      verifyUserDoesNotExist(101, "Jane Smith");
+    });
+
+    /**
+     * User Addition Monitor
+     * Listens for any user addition event and verifies the user exists in the system.
+     * Blocks deletion attempts until verification is complete to ensure atomic operations.
+     */
     bthread("User add verification", function () {
       user = waitForAnyUserAdded();
 
@@ -45,7 +70,11 @@ switch (stage) {
     });
 
 
-    // Verify the book exists after being added
+    /**
+     * Book Addition Monitor
+     * Tracks book additions and ensures each new book is properly registered.
+     * Prevents deletion operations until the book's existence is confirmed.
+     */
     bthread("Book add verification", function () {
       book = waitForAnyBookAdded();
 
@@ -54,7 +83,11 @@ switch (stage) {
       });
     });
 
-    // Verify the loan exists after being added
+    /**
+     * Loan Creation Monitor
+     * Validates that each new loan is properly recorded in the system.
+     * Blocks deletion attempts until the loan is verified to exist.
+     */
     bthread("Loan add verification", function () {
       loan = waitForAnyLoanAdded();
 
@@ -63,7 +96,11 @@ switch (stage) {
       });
     });
 
-    // User deletion verification
+    /**
+     * User Deletion Monitor
+     * Ensures users are properly removed from the system.
+     * Blocks new user creation with same ID until deletion is verified.
+     */
     bthread("User deletion verification", function () {
       user = waitForAnyUserDeleted();
 

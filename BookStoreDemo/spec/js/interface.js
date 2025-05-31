@@ -260,11 +260,8 @@ function addLoan(userId, bookId) {
  * @param {number} bookId - The ID of the book that is loaned
  */
 function deleteLoan(userId, bookId) {
-    svc.delete("/loans", {
-        body: JSON.stringify({
-            bookId: bookId,
-            userId: userId
-        }),
+    // Delete loan by userId and bookId, including them in the description for clarity
+    svc.delete("/loans/" + userId + "/" + bookId, {
         parameters: {
             description: "Delete a loan with bookId " + bookId + " and userId " + userId
         }
