@@ -60,8 +60,20 @@ def add_user():
 @app.route('/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     global users
-    users = [user for user in users if user.get('id') != user_id]
-    return jsonify({'message': 'User deleted'}), 200
+    try:
+        user_id = int(user_id)
+        print(f"Attempting to delete user with ID: {user_id}")
+    except ValueError:
+        return jsonify({'error': 'Invalid user ID format'}), 400
+    
+    if any(loan.get('userId') == user_id for loan in loans):
+        return jsonify({'error': 'Cannot delete user with active loans'}), 400
+    
+    user = next((u for u in users if u.get('id') == user_id), None)
+    if user:
+        users.remove(user)
+        return jsonify({'message': 'User deleted'}), 200
+    return jsonify({'error': 'User not found'}), 404
 
 @app.route('/users', methods=['GET'])
 def search_users():
@@ -154,7 +166,7 @@ def add_book():
     if 'id' not in book:
         print("Error: Attempt to add book without id")
         return jsonify({'error': 'book id is required'}), 400
-    if book.get('id') in books:
+    if book.get('id') in [b.get('id') for b in books]:
         print("Error: Attempt to add duplicate book")
         return jsonify({'error': 'Book already exists'}), 400
     else:
@@ -165,8 +177,29 @@ def add_book():
 @app.route('/books/<book_id>', methods=['DELETE'])
 def delete_book(book_id):
     global books
+    try:
+        book_id = int(book_id)
+    except ValueError:
+        return jsonify({'error': 'Invalid book ID format'}), 400
+
+    # Check if book exists
+    if not any(b.get('id') == book_id for b in books):
+        print(f"Attempt to delete non-existent book {book_id}")
+        return jsonify({'error': 'Book not found'}), 404
+
+    # Check if book has active loans
+    if any(loan.get('bookId') == book_id for loan in loans):
+        print(f"Cannot delete book {book_id} - has active loans")
+        return jsonify({'error': 'Cannot delete book with active loans'}), 400
+
+    original_count = len(books)
     books = [book for book in books if book.get('id') != book_id]
-    return jsonify({'message': 'Book deleted'}), 200
+    
+    print(f"Book {book_id} deleted successfully. Books remaining: {len(books)}")
+    return jsonify({
+        'message': 'Book deleted',
+        'booksRemaining': len(books)
+    }), 200
 
 @app.route('/books', methods=['GET'])
 def search_books():
