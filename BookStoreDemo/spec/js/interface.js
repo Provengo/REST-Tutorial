@@ -130,53 +130,74 @@ function verifyBookDoesNotExist(id, title) {
 
 
 // Helper functions for Loan API endpoints
-function addLoan(id, userId) {
+function addLoan(userId, bookId ) {
     svc.post("/loans", {
         body: JSON.stringify({
-            bookId: id,
-            userId: userId,
+            bookId: bookId,
+            userId: userId
         }),
         parameters: {
-            description: "Add a loan with bookId " + id + " and userId " + userId
+            description: "Add a loan with bookId " + bookId + " and userId " + userId
         }
     });
 }
 
-function deleteLoan(id) {
-    svc.delete("/loans/" + id,
-        {
-            parameters: {
-                description: "Delete loan with id " + id
-            }
-        }
-    );
-}
-
-function checkLoanExists(id) {
-    svc.get("/loans?q=" + id, function (response) {
-        const results = JSON.parse(response.body);
-        if (results.some(loan => loan.id === id)) {
-            pvg.success("Loan " + id + " exists");
-        } else {
-            pvg.fail("Loan " + id + " not found");
-        }
-    }, parameters = {
-        description: "Check that loan with id " + id + " exists"
-    });
-}
-
-function checkLoanDoesNotExist(id) {
-    svc.get("/loans?q=" + id, function (response) {
-        const results = JSON.parse(response.body);
-        if (results.some(loan => loan.id === id)) {
-            pvg.fail("Loan " + id + " should not exist but it does");
-        } else {
-            pvg.success("Loan " + id + " does not exist");
-        }
-    }, {
+function deleteLoan(userId, bookId) {
+    svc.delete("/loans", {
+        body: JSON.stringify({
+            bookId: bookId,
+            userId: userId
+        }),
         parameters: {
-            description: "Check that loan with id " + id + " does not exist"
+            description: "Delete a loan with bookId " + bookId + " and userId " + userId
         }
     });
-
 }
+
+function verifyLoanExists(userId, bookId) {
+    svc.get("/loans", {
+        callback: function (response) {
+            const loans = JSON.parse(response.body);
+            for (let i = 0; i < loans.length; i++) {
+                if (loans[i].userId === userId && loans[i].bookId === bookId) {
+                    return pvg.success("Loan exists");
+                }
+            }
+            return pvg.fail("Expected a loan to exists but it does not");
+        },
+        parameters: {
+            description: "Verify loan with userId " + userId + " and bookId " + bookId + " exists"
+        },
+    });
+}
+
+function verifyLoanDoesNotExist(userId, bookId) {
+    svc.get("/loans", {
+        callback: function (response) {
+            const loans = JSON.parse(response.body);
+            for (let i = 0; i < loans.length; i++) {
+                if (loans[i].userId === userId && loans[i].bookId === bookId) {
+                    return pvg.fail("Expected a loan to not exist but it does");
+                }
+            }
+            return pvg.success("Loan does not exist");
+        },
+        parameters: {
+            description: "Verify loan with userId " + userId + " and bookId " + bookId + " does not exist"
+        },
+    });
+}
+
+function tryToAddExistingLoan(userId, bookId) {
+    svc.post("/loans", {
+        body: JSON.stringify({
+            userId: userId,
+            bookId: bookId
+        }),
+        expectedResponseCodes: [400],
+        parameters: {
+            description: "Verify that we cannot add another loan with userId " + userId + " and bookId " + bookId
+        }
+    });
+}
+

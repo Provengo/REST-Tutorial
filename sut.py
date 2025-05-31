@@ -18,7 +18,7 @@ def reset_database():
     users = []
     loans = []
     holds = []
-    books = {}
+    books = []
     
     # If initial data is provided, load it
     if request.is_json:
@@ -30,7 +30,7 @@ def reset_database():
         if 'holds' in data:
             holds.extend(data['holds'])
         if 'books' in data:
-            books.update(data['books'])
+            books.extend(data['books'])
     
     return jsonify({
         'message': 'Database reset',
@@ -85,6 +85,8 @@ def add_loan():
     # Check that book exists
     if book_id is None:
         return jsonify({'error': 'bookId is required'}), 400
+
+    print(f"Checking if book {book_id} exists in books: {books}")
     
     if not any(b.get('id') == book_id for b in books):
         return jsonify({'error': f'Book {book_id} does not exist'}), 400
@@ -157,26 +159,28 @@ def add_book():
         print("Error: Attempt to add duplicate book")
         return jsonify({'error': 'Book already exists'}), 400
     else:
-        books[book['id']] = book
+        books.append(book)
         return jsonify({'message': 'Book Added', 'book': book}), 201
 
 @app.route('/books/<book_id>', methods=['DELETE'])
 def delete_book(book_id):
-    if book_id in books:
-        del books[book_id]
+    book = next((b for b in books if b.get('id') == book_id), None)
+    if book:
+        books.remove(book)
         return jsonify({'message': 'Book deleted'}), 200
     return jsonify({'error': 'Book not found'}), 404
 
 @app.route('/books', methods=['GET'])
 def search_books():
     query = request.args.get('q', '').lower()
-    results = [book for book in books.values() if query in str(book).lower()] if query else list(books.values())
+    results = [book for book in books if query in str(book).lower()] if query else books
     return jsonify(results)
 
 @app.route('/books/<book_id>', methods=['GET'])
 def get_book(book_id):
-    if book_id in books:
-        return jsonify(books[book_id])
+    book = next((b for b in books if b.get('id') == book_id), None)
+    if book:
+        return jsonify(book), 200
     return jsonify({'error': 'Book not found'}), 404
 
 if __name__ == '__main__':
@@ -189,4 +193,4 @@ if __name__ == '__main__':
     port = 23242 #random.randint(1024, 65535)
     print(f"{port=}")
     
-    app.run(host=host, port=port)
+    app.run(host=host, port=port, debug=True)

@@ -28,6 +28,6 @@ url = f"http://{host}:{port}"
 
 test_data = {
     'users': [{ 'id': 1, 'name': 'Test User' }],
-    'books': {'1': { 'id': '1', 'title': 'Test Book' }}
+    'books': [{ 'id': 1, 'title': 'Test Book' }]
 }
 requests.post(f"{url}/reset", json=test_data)
