@@ -40,6 +40,15 @@ function tryToAddExistingBook(id, title) {
     });
 }
 
+
+deleteBook = function (id, title) {
+    svc.delete("/books/" + id, {
+        parameters: {
+            description: "Delete a book with id " + id + " and title " + title
+        }
+    });
+}
+
 // Try to add a user that already exists
 function tryToAddExistingUser(id, name) {
     svc.post("/users", {
@@ -130,7 +139,7 @@ function verifyBookDoesNotExist(id, title) {
 
 
 // Helper functions for Loan API endpoints
-function addLoan(userId, bookId ) {
+function addLoan(userId, bookId) {
     svc.post("/loans", {
         body: JSON.stringify({
             bookId: bookId,
@@ -201,3 +210,37 @@ function tryToAddExistingLoan(userId, bookId) {
     });
 }
 
+// Wait for an event with a specific description
+function matchesDescription(description) {
+    return bp.EventSet("test", function (e) {
+        if (!e.data) return false;
+        if (!e.data.parameters) return false;
+        if (!e.data.parameters.description) return false;
+        return e.data.parameters.description === description;
+    });
+}
+
+
+function waitForBookAdded(id, title) {
+    waitFor(matchesDescription("Add a book with id " + id + " and title " + title));
+}
+
+function waitForUserAdded(id, name) {
+    waitFor(matchesDescription("Add a user with id " + id + " and name " + name));
+}
+
+function waitForLoanAdded(userId, bookId) {
+    waitFor(matchesDescription("Add a loan with userId " + userId + " and bookId " + bookId));
+}
+
+function waitForLoanDeleted(userId, bookId) {
+    waitFor(matchesDescription("Delete a loan with userId " + userId + " and bookId " + bookId));
+}
+
+function waitForUserDeleted(id, name) {
+    waitFor(matchesDescription("Delete a user with id " + id + " and name " + name));
+}
+
+function waitForBookDeleted(id, title) {
+    waitFor(matchesDescription("Delete a book with id " + id + " and title " + title));
+}

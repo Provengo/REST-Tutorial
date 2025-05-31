@@ -151,7 +151,6 @@ def search_holds():
 @app.route('/books', methods=['POST'])
 def add_book():
     book = request.get_json()
-
     if 'id' not in book:
         print("Error: Attempt to add book without id")
         return jsonify({'error': 'book id is required'}), 400
@@ -162,13 +161,12 @@ def add_book():
         books.append(book)
         return jsonify({'message': 'Book Added', 'book': book}), 201
 
+# Delete a book by ID
 @app.route('/books/<book_id>', methods=['DELETE'])
 def delete_book(book_id):
-    book = next((b for b in books if b.get('id') == book_id), None)
-    if book:
-        books.remove(book)
-        return jsonify({'message': 'Book deleted'}), 200
-    return jsonify({'error': 'Book not found'}), 404
+    global books
+    books = [book for book in books if book.get('id') != book_id]
+    return jsonify({'message': 'Book deleted'}), 200
 
 @app.route('/books', methods=['GET'])
 def search_books():
