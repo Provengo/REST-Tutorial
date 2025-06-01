@@ -89,7 +89,7 @@ function verifyBookExists(id, title) {
             return pvg.fail("Expected a book with id " + id + " and title " + title + " to exists but it does not");
         },
         parameters: {
-            description: "Verify book with id " + id + " and title '" + title + "' exists"
+            description: "Verify book with id " + id + " and title " + title + " exists"
         }
     });
 }
@@ -208,10 +208,7 @@ function verifyUserDoesNotExist(id, name) {
  */
 function deleteUser(id, name) {
     // Delete user by ID and include the name in the description for clarity
-    svc.delete("/users", {
-        body: JSON.stringify({
-            id: id
-        }),
+    svc.delete("/users/" + id, {
         parameters: {
             description: "Delete user with id " + id + " and name " + name
         }
@@ -225,7 +222,7 @@ function deleteUser(id, name) {
  */
 function tryToDeleteNonExistentUserOrInLoan(id, name) {
     svc.delete("/users/" + id, {
-        expectedResponseCodes: [400,404], // 400 for bad request, 404 for not found
+        expectedResponseCodes: [400, 404], // 400 for bad request, 404 for not found
         parameters: {
             description: "Verify that we cannot delete a user with id " + id + " and name " + name + " that does not exist or has loans"
         }
