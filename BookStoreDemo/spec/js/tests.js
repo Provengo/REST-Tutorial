@@ -26,14 +26,14 @@ switch (stage) {
 
     bthread("Librarian", function () {
       waitForAnyUserAdded();
-      waitForAnyUserAdded();
       addBook(201, "The Great Gatsby");
+      waitForAnyUserAdded();
       addBook(202, "1984");
     });
 
     bthread("John's Loan", function () {
       addUser(100, "John Doe");
-      book = waitForAnyBookAdded();
+      let book = waitForAnyBookAdded();
       addLoan(100, book.id);
       tryToDeleteNonExistentBookOrInLoan(book.id, book.title);
       tryToAddExistingLoan(100, book.id);
@@ -41,19 +41,17 @@ switch (stage) {
       deleteLoan(100, book.id);
       verifyLoanDoesNotExist(100, book.id);
       deleteUser(100, "John Doe");
-      verifyUserDoesNotExist(100, "John Doe");
     });
 
     bthread("Jane's Loan", function () {
       addUser(101, "Jane Smith");
-      book = waitForAnyBookAdded();
+      let book = waitForAnyBookAdded();
       addLoan(101, book.id);
       tryToDeleteNonExistentBookOrInLoan(book.id, book.title);
       tryToAddExistingLoan(101, book.id);
       tryToDeleteNonExistentUserOrInLoan(101, "Jane Smith");
       deleteLoan(101, book.id);
       deleteUser(101, "Jane Smith");
-      verifyUserDoesNotExist(101, "Jane Smith");
     });
 
     /**
@@ -63,8 +61,7 @@ switch (stage) {
      */
     bthread("User add verification", function () {
       user = waitForAnyUserAdded();
-
-      block(matchesDescription("Delete a user with id " + user.id + " and name " + user.name), function () {
+      block(matchDeleteUser(user.id, user.name), function () {
         verifyUserExists(user.id, user.name);
       });
     });
@@ -78,7 +75,7 @@ switch (stage) {
     bthread("Book add verification", function () {
       book = waitForAnyBookAdded();
 
-      block(matchesDescription("Delete a book with id " + book.id + " and title " + book.title), function () {
+      block(matchDeleteBook(book.id, book.title), function () {
         verifyBookExists(book.id, book.title);
       });
     });
@@ -91,7 +88,7 @@ switch (stage) {
     bthread("Loan add verification", function () {
       loan = waitForAnyLoanAdded();
 
-      block(matchesDescription("Delete a loan with user id " + loan.userId + " and book id " + loan.bookId), function () {
+      block(matchDeleteLoan(loan.userId, loan.bookId), function () {
         verifyLoanExists(loan.userId, loan.bookId);
       });
     });

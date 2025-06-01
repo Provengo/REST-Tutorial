@@ -132,6 +132,20 @@ function tryToAddExistingUser(id, name) {
     });
 }
 
+/**
+ * Attempts to delete a user that does not exist or is in loan (should fail)
+ * @param {number} id - The ID of the user to delete
+ */
+function tryToDeleteNonExistentUserOrInLoan(id, name) {
+    // Delete user by ID and include the name in the description for clarity
+    svc.delete("/users/" + id, {
+        expectedResponseCodes: [400, 404], // Expecting 400 for in loan or 404 for non-existent user
+        parameters: {
+            description: "Verify that we cannot delete a user with id " + id + " and name " + name + " that does not exist or is in loan"
+        }
+    });
+}
+
 /** Loan Operations **/
 /**
  * Creates a new loan record
@@ -465,6 +479,101 @@ function matchAnyDeleteLoan() {
         if (!e.data.parameters.description) return false;
 
         return e.data.parameters.description.startsWith("Delete a loan with userId");
+    });
+}
+
+
+/**
+ * Matches a specific delete user event
+ * @param {number} id - The ID of the user to match
+ * @param {string} name - The name of the user to match
+ * @returns {EventSet} An event set that matches the specific delete user event
+ */
+function matchDeleteUser(id, name) {
+    return bp.EventSet("test", function (e) {
+        if (!e.data) return false;
+        if (!e.data.parameters) return false;
+        if (!e.data.parameters.description) return false;
+
+        return e.data.parameters.description === "Delete user with id " + id + " and name " + name;
+    });
+}
+
+/** Matches a specific delete book event
+ * @param {number} id - The ID of the book to match
+ * @param {string} title - The title of the book to match
+ * @returns {EventSet} An event set that matches the specific delete book event
+ */
+function matchDeleteBook(id, title) {
+    return bp.EventSet("test", function (e) {
+        if (!e.data) return false;
+        if (!e.data.parameters) return false;
+        if (!e.data.parameters.description) return false;
+
+        return e.data.parameters.description === "Delete book with id " + id + " and title " + title;
+    });
+}
+
+/** Matches a specific delete loan event
+ * @param {number} userId - The ID of the user associated with the loan
+ * @param {number} bookId - The ID of the book associated with the loan
+ * @returns {EventSet} An event set that matches the specific delete loan event
+ */
+function matchDeleteLoan(userId, bookId) {
+    return bp.EventSet("test", function (e) {
+        if (!e.data) return false;
+        if (!e.data.parameters) return false;
+        if (!e.data.parameters.description) return false;
+
+        return e.data.parameters.description === "Delete loan with userId " + userId + " and bookId " + bookId;
+    });
+}
+
+
+/**
+ * Matches a specific add user event
+ * @param {number} id - The ID of the user to match
+ * @param {string} name - The name of the user to match
+ * @returns {EventSet} An event set that matches the specific add user event    
+ */
+function matchAddUser(id, name) {
+    return bp.EventSet("test", function (e) {
+        if (!e.data) return false;
+        if (!e.data.parameters) return false;
+        if (!e.data.parameters.description) return false;
+
+        return e.data.parameters.description === "Add a user with id " + id + " and name " + name;
+    });
+}
+
+/** Matches a specific add book event
+ * @param {number} id - The ID of the book to match
+ * @param {string} title - The title of the book to match
+ * @returns {EventSet} An event set that matches the specific add book event
+ */
+function matchAddBook(id, title) {
+    return bp.EventSet("test", function (e) {
+        if (!e.data) return false;
+        if (!e.data.parameters) return false;
+        if (!e.data.parameters.description) return false;
+
+        return e.data.parameters.description === "Add a book with id " + id + " and title " + title;
+    });
+}
+
+
+/** Matches a specific add loan event
+ * @param {number} userId - The ID of the user associated with the loan
+ * @param {number} bookId - The ID of the book associated with the loan
+ * @returns {EventSet} An event set that matches the specific add loan event
+ */
+function matchAddLoan(userId, bookId) {
+    return bp.EventSet("test", function (e) {
+        if (!e.data) return false;
+        if (!e.data.parameters) return false;
+        if (!e.data.parameters.description) return false;
+
+        return e.data.parameters.description === "Add a loan with userId " + userId + " and bookId " + bookId;
     });
 }
 
