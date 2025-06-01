@@ -1,15 +1,25 @@
 /**
+ * Library Management System API Interface
+ * 
+ * This module provides functions for interacting with the library API:
+ * - CRUD operations for books, users, and loans
+ * - Verification functions for entity existence
+ * - Event matching and waiting utilities
+ * 
+ */
+
+// === REST Service Configuration ===
+/**
  * REST service instance for communicating with the book store API
+ * @type {RESTSession}
  */
 const svc = new RESTSession("http://" + host + ":" + port, "provengo basedclient", {
     headers: { "Content-Type": "application/json" },
 });
 
-/**
- * Book Management Operations
- * These functions handle CRUD operations for books in the store
- */
+// === Core CRUD Operations ===
 
+/** Book Operations **/
 /**
  * Adds a new book to the store
  * @param {number} id - The unique identifier for the book
@@ -43,13 +53,13 @@ function deleteBook(id, title) {
 
 
 /**
- * Trying to delete a book that does not exist or is in loan (should fail)
+ * Try to delete a book that does not exist or is in loan (should fail)
  * @param {number} id - The ID of the book to delete
  * @param {string} title - The title of the book to delete
  */
 function tryToDeleteNonExistentBookOrInLoan(id, title) {
     svc.delete("/books/" + id, {
-        expectedResponseCodes: [400],
+        expectedResponseCodes: [400, 404], // Expecting 400 for in loan or 404 for non-existent book
         parameters: {
             description: "Verify that we cannot delete a book with id " + id + " and title " + title + " that does not exist or is in loan"
         }
@@ -58,7 +68,7 @@ function tryToDeleteNonExistentBookOrInLoan(id, title) {
 
 
 /**
- * Attempts to add a book that already exists (should fail)
+ * Attempt to add a book that already exists (should fail)
  * @param {number} id - The ID of the existing book
  * @param {string} title - The title of the existing book
  */
@@ -72,55 +82,7 @@ function tryToAddExistingBook(id, title) {
     });
 }
 
-/**
- * Verifies that a specific book exists in the store
- * @param {number} id - The book ID to check
- * @param {string} title - The book title to check
- */
-function verifyBookExists(id, title) {
-    svc.get("/books", {
-        callback: function (response) {
-            book = JSON.parse(response.body);
-            for (let i = 0; i < book.length; i++) {
-                if (book[i].id === id && book[i].title === title) {
-                    return pvg.success("Book exists");
-                }
-            }
-            return pvg.fail("Expected a book with id " + id + " and title " + title + " to exists but it does not");
-        },
-        parameters: {
-            description: "Verify book with id " + id + " and title " + title + " exists"
-        }
-    });
-}
-
-/**
- * Verifies that a specific book does not exist in the store
- * @param {number} id - The book ID to check
- * @param {string} title - The book title to check
- */
-function verifyBookDoesNotExist(id, title) {
-    svc.get("/books", {
-        callback: function (response) {
-            book = JSON.parse(response.body);
-            for (let i = 0; i < book.length; i++) {
-                if (book[i].id === id && book[i].title === title) {
-                    return pvg.fail("Expected a book to not exist but it does");
-                }
-            }
-            return pvg.success("Book does not exist");
-        },
-        parameters: {
-            description: "Verify book with id " + id + " and title " + title + " does not exist"
-        }
-    });
-}
-
-/**
- * User Management Operations
- * These functions handle CRUD operations for users in the store
- */
-
+/** User Operations **/
 /**
  * Adds a new user to the store
  * @param {number} id - The unique identifier for the user
@@ -134,6 +96,20 @@ function addUser(id, name) {
         }),
         parameters: {
             description: "Add a user with id " + id + " and name " + name
+        }
+    });
+}
+
+/**
+ * Deletes a user from the store
+ * @param {number} id - The unique identifier of the user to delete
+ * @param {string} name - The name of the user to delete
+ */
+function deleteUser(id, name) {
+    // Delete user by ID and include the name in the description for clarity
+    svc.delete("/users/" + id, {
+        parameters: {
+            description: "Delete user with id " + id + " and name " + name
         }
     });
 }
@@ -156,84 +132,7 @@ function tryToAddExistingUser(id, name) {
     });
 }
 
-/**
- * Verifies that a specific user exists in the store
- * @param {number} id - The user ID to check
- * @param {string} name - The user name to check
- */
-function verifyUserExists(id, name) {
-    svc.get("/users", {
-        callback: function (response) {
-            user = JSON.parse(response.body);
-            for (let i = 0; i < user.length; i++) {
-                if (user[i].id === id && user[i].name === name) {
-                    return pvg.success("User exists");
-                }
-            }
-            return pvg.fail("Expected a user to exists but it does not");
-        },
-        parameters: {
-            description: "Verify user with id " + id + " and name " + name + " exists"
-        },
-    });
-}
-
-/**
- * Verifies that a specific user does not exist in the store
- * @param {number} id - The user ID to check
- * @param {string} name - The user name to check
- */
-function verifyUserDoesNotExist(id, name) {
-    svc.get("/users", {
-        callback: function (response) {
-            user = JSON.parse(response.body);
-            for (let i = 0; i < user.length; i++) {
-                if (user[i].id === id && user[i].name === name) {
-                    return pvg.fail("Expected a user to not exist but it does");
-                }
-            }
-            return pvg.success("User does not exist");
-        },
-        parameters: {
-            description: "Verify user with id " + id + " and name " + name + " does not exist"
-        },
-    });
-}
-
-
-/**
- * Deletes a user from the store
- * @param {number} id - The unique identifier of the user to delete
- * @param {string} name - The name of the user to delete
- */
-function deleteUser(id, name) {
-    // Delete user by ID and include the name in the description for clarity
-    svc.delete("/users/" + id, {
-        parameters: {
-            description: "Delete user with id " + id + " and name " + name
-        }
-    });
-}
-
-/**
- * Trying to delete a user that does not exist or has loans (should fail)
- * @param {number} id - The ID of the user to delete
- * @param {string} name - The name of the user to delete
- */
-function tryToDeleteNonExistentUserOrInLoan(id, name) {
-    svc.delete("/users/" + id, {
-        expectedResponseCodes: [400, 404], // 400 for bad request, 404 for not found
-        parameters: {
-            description: "Verify that we cannot delete a user with id " + id + " and name " + name + " that does not exist or has loans"
-        }
-    });
-}
-
-/**
- * Loan Management Operations
- * These functions handle CRUD operations for book loans
- */
-
+/** Loan Operations **/
 /**
  * Creates a new loan record
  * @param {number} userId - The ID of the user borrowing the book
@@ -327,11 +226,149 @@ function tryToAddExistingLoan(userId, bookId) {
     });
 }
 
-/**
- * Event Matching and Waiting Operations
- * These functions handle event detection and synchronization
- */
+// === Verification Functions ===
 
+/** Book Verifications **/
+/**
+ * Verifies entity existence in the store
+ * @param {string} type - Type of entity to verify (book, user, loan)
+ * @param {Object} params - Search parameters
+ * @param {function} matcher - Function to match the entity
+ * @returns {Promise<boolean>} True if entity exists
+ */
+function verifyEntityExists(type, params, matcher) {
+    svc.get(`/${type}s`, {
+        callback: function (response) {
+            const entities = JSON.parse(response.body);
+            return entities.some(matcher) 
+                ? pvg.success(`${type} exists`) 
+                : pvg.fail(`${type} not found`);
+        },
+        parameters: {
+            description: `Verify ${type} exists with params ${JSON.stringify(params)}`
+        }
+    });
+}
+
+// Use the generic verifyEntityExists for specific entity types
+function verifyBookExists(id, title) {
+    return verifyEntityExists('book', {id, title}, 
+        book => book.id === id && book.title === title);
+}
+
+/**
+ * Verifies that a specific book does not exist in the store
+ * @param {number} id - The book ID to check
+ * @param {string} title - The book title to check
+ */
+function verifyBookDoesNotExist(id, title) {
+    svc.get("/books", {
+        callback: function (response) {
+            book = JSON.parse(response.body);
+            for (let i = 0; i < book.length; i++) {
+                if (book[i].id === id && book[i].title === title) {
+                    return pvg.fail("Expected a book to not exist but it does");
+                }
+            }
+            return pvg.success("Book does not exist");
+        },
+        parameters: {
+            description: "Verify book with id " + id + " and title " + title + " does not exist"
+        }
+    });
+}
+
+/** User Verifications **/
+/**
+ * Verifies that a specific user exists in the store
+ * @param {number} id - The user ID to check
+ * @param {string} name - The user name to check
+ */
+function verifyUserExists(id, name) {
+    svc.get("/users", {
+        callback: function (response) {
+            user = JSON.parse(response.body);
+            for (let i = 0; i < user.length; i++) {
+                if (user[i].id === id && user[i].name === name) {
+                    return pvg.success("User exists");
+                }
+            }
+            return pvg.fail("Expected a user to exists but it does not");
+        },
+        parameters: {
+            description: "Verify user with id " + id + " and name " + name + " exists"
+        },
+    });
+}
+
+/**
+ * Verifies that a specific user does not exist in the store
+ * @param {number} id - The user ID to check
+ * @param {string} name - The user name to check
+ */
+function verifyUserDoesNotExist(id, name) {
+    svc.get("/users", {
+        callback: function (response) {
+            user = JSON.parse(response.body);
+            for (let i = 0; i < user.length; i++) {
+                if (user[i].id === id && user[i].name === name) {
+                    return pvg.fail("Expected a user to not exist but it does");
+                }
+            }
+            return pvg.success("User does not exist");
+        },
+        parameters: {
+            description: "Verify user with id " + id + " and name " + name + " does not exist"
+        },
+    });
+}
+
+/** Loan Verifications **/
+/**
+ * Verifies that a specific loan exists
+ * @param {number} userId - The user ID associated with the loan
+ * @param {number} bookId - The book ID associated with the loan
+ */
+function verifyLoanExists(userId, bookId) {
+    svc.get("/loans", {
+        callback: function (response) {
+            const loans = JSON.parse(response.body);
+            for (let i = 0; i < loans.length; i++) {
+                if (loans[i].userId === userId && loans[i].bookId === bookId) {
+                    return pvg.success("Loan exists");
+                }
+            }
+            return pvg.fail("Expected a loan to exists but it does not");
+        },
+        parameters: {
+            description: "Verify loan with userId " + userId + " and bookId " + bookId + " exists"
+        },
+    });
+}
+
+/**
+ * Verifies that a specific loan does not exist
+ * @param {number} userId - The user ID associated with the loan
+ * @param {number} bookId - The book ID associated with the loan
+ */
+function verifyLoanDoesNotExist(userId, bookId) {
+    svc.get("/loans", {
+        callback: function (response) {
+            const loans = JSON.parse(response.body);
+            for (let i = 0; i < loans.length; i++) {
+                if (loans[i].userId === userId && loans[i].bookId === bookId) {
+                    return pvg.fail("Expected a loan to not exist but it does");
+                }
+            }
+            return pvg.success("Loan does not exist");
+        },
+        parameters: {
+            description: "Verify loan with userId " + userId + " and bookId " + bookId + " does not exist"
+        },
+    });
+}
+
+// === Event Matching ===
 /**
  * Matches an event based on its description
  * @param {string} description - The exact description to match
@@ -431,6 +468,7 @@ function matchAnyDeleteLoan() {
     });
 }
 
+// === Event Waiting ===
 /**
  * Event Waiting Functions for Books
  */
