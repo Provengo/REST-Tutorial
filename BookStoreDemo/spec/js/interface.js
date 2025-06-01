@@ -1,3 +1,5 @@
+//@provengo summon rest
+
 /**
  * Library Management System API Interface
  * 
@@ -244,30 +246,23 @@ function tryToAddExistingLoan(userId, bookId) {
 
 /** Book Verifications **/
 /**
- * Verifies entity existence in the store
- * @param {string} type - Type of entity to verify (book, user, loan)
- * @param {Object} params - Search parameters
- * @param {function} matcher - Function to match the entity
- * @returns {Promise<boolean>} True if entity exists
+ * Verifies a specific book exist in the store
+ * @param {number} id - The book ID to check
+ * @param {string} title - The book title to check
+ * @returns {Promise<boolean>} True if the book exists
  */
-function verifyEntityExists(type, params, matcher) {
-    svc.get(`/${type}s`, {
+function verifyBookExists(id, title) {
+    return svc.get("/books", {
         callback: function (response) {
-            const entities = JSON.parse(response.body);
-            return entities.some(matcher) 
-                ? pvg.success(`${type} exists`) 
-                : pvg.fail(`${type} not found`);
+            const books = JSON.parse(response.body);
+            return books.some(book => book.id === id && book.title === title)
+                ? pvg.success("Book exists")
+                : pvg.fail("Book not found");
         },
         parameters: {
-            description: `Verify ${type} exists with params ${JSON.stringify(params)}`
+            description: `Verify book exists with id ${id} and title ${title}`
         }
     });
-}
-
-// Use the generic verifyEntityExists for specific entity types
-function verifyBookExists(id, title) {
-    return verifyEntityExists('book', {id, title}, 
-        book => book.id === id && book.title === title);
 }
 
 /**

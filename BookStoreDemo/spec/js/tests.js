@@ -2,13 +2,15 @@
 
 
 // "LINEAR" or "PARALLEL"
-const stage = "PARALLEL"
+with (Main.options.getOptional('mode', Packages.java.lang.String)) {
+  const mode = isPresent() ? get() : "LINEAR"; // Default to LINEAR if not specified
+}
 
-
+bp.log.info("Starting BookStoreDemo test with mode: " + mode);
 
 
 //////////////////////////////////////////////////////
-switch (stage) {
+switch (mode) {
 
   case "LINEAR":
     // A simple linear story for a library loan system
@@ -21,6 +23,7 @@ switch (stage) {
       verifyUserExists(111, "John Doe");
       verifyBookExists(222, "The Great Gatsby");
     });
+    break;
 
   case "PARALLEL":
 
