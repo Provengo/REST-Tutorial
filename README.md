@@ -14,7 +14,7 @@ Each entity (user, book, loan) supports basic CRUD operations through standard H
 
 ## Creating a Clean Testing Interface
 
-Rather than directly calling REST endpoints in our tests, we create a clean testing interface that wraps the raw HTTP calls. This interface layer is defined in `interface.js`.
+Rather than directly calling REST endpoints in our tests, we create a clean testing interface that wraps the raw HTTP calls. This interface layer is defined in `BookStoreDemo\spec\js\interface.js`.
 
 ### Basic CRUD Operations
 
@@ -57,7 +57,7 @@ This allows test code to synchronize on API operations without dealing with asyn
 
 ## Linear Testing Approach
 
-The simplest way to test our API is with a linear sequence of operations. In `spec\js\a_linear_test.js`, we have a "LINEAR" scenario that demonstrates this:
+The simplest way to test our API is with a linear sequence of operations. In `BookStoreDemo\spec\js\a_linear_test.js`, we have a "LINEAR" scenario that demonstrates this:
 
 ```javascript 
 bthread("Loan API", function () {
@@ -79,7 +79,7 @@ This linear approach:
 
 ## Model-Based Testing Approach
 
-To increase test coverage and find edge cases, we can run multiple scenarios in parallel. The model in `spec\js\a_testing_model.js` demonstrates this:
+To increase test coverage and find edge cases, we can run multiple scenarios in parallel. The model in `BookStoreDemo\spec\js\a_testing_model.js` demonstrates this:
 
 ```javascript
 bthread("Librarian", function () {
