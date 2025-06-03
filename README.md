@@ -59,7 +59,7 @@ This allows test code to synchronize on API operations without dealing with asyn
 
 The simplest way to test our API is with a linear sequence of operations. In `spec\js\a_linear_test.js.js`, we have a "LINEAR" scenario that demonstrates this:
 
-```javascript
+```javascript 
 bthread("Loan API", function () {
     addUser(111, "John Doe");
     addBook(222, "The Great Gatsby");
@@ -67,7 +67,7 @@ bthread("Loan API", function () {
     tryToAddExistingLoan(111, 222);
     verifyLoanExists(111, 222);
     verifyUserExists(111, "John Doe");
-    verifyBookExists(222, "The Great Gatsby");
+    verifyBookExists(222, "The Great Gatsby"); 
 });
 ```
 
