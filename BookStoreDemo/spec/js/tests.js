@@ -104,7 +104,7 @@ switch (mode) {
     bthread("User deletion verification", function () {
       user = waitForAnyUserDeleted();
 
-      block(matchesDescription("Add user with id " + user.id + " and name " + user.name), function () {
+      block(matchAddUser(user.id, user.name), function () {
         verifyUserDoesNotExist(user.id, user.name);
       });
     });
@@ -113,7 +113,7 @@ switch (mode) {
     bthread("Book deletion verification", function () {
       book = waitForAnyBookDeleted();
 
-      block(matchesDescription("Add book with id " + book.id + " and title " + book.title), function () {
+      block(matchAddBook(book.id, book.title), function () {
         verifyBookDoesNotExist(book.id, book.title);
       });
     });
@@ -122,7 +122,7 @@ switch (mode) {
     bthread("Loan deletion verification", function () {
       loan = waitForAnyLoanDeleted();
 
-      block(matchesDescription("Add loan with user id " + loan.userId + " and book id " + loan.bookId), function () {
+      block(matchAddLoan(loan.userId, loan.bookId), function () {
         verifyLoanDoesNotExist(loan.userId, loan.bookId);
       });
     });

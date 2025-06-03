@@ -5,7 +5,7 @@ provengo -c mode=PARALLEL run -s products\run-source\samples.json --before="pyth
         "$($matches[1]) Selected: [`"$($matches[2])`"]"
     } else {
         $_
-    }F
+    }
 } 
 
 provengo -c mode=PARALLEL report --suites :last .\BookStoreDemo\
