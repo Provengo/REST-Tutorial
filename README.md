@@ -57,7 +57,7 @@ This allows test code to synchronize on API operations without dealing with asyn
 
 ## Linear Testing Approach
 
-The simplest way to test our API is with a linear sequence of operations. In `spec\js\a_linear_test.js.js`, we have a "LINEAR" scenario that demonstrates this:
+The simplest way to test our API is with a linear sequence of operations. In `spec\js\a_linear_test.js`, we have a "LINEAR" scenario that demonstrates this:
 
 ```javascript 
 bthread("Loan API", function () {
@@ -145,18 +145,18 @@ provengo run BookStoreDemo --before="python reset.py"
 
 > **Info**: The `--before` option executes a preparation script before each test run. In this case, `reset.py` makes a POST request to the `/reset` endpoint of our API, which clears all existing books, users, and loans. This ensures each test starts with a known, clean state - a crucial practice for maintaining test reliability and preventing interference between test runs.
 
-> **Info**: The above command runs the linear tests. To run the parallel tests, use the `-c mode=PARALLEL` option:
-`
-provengo -c mode=PARALLEL run BookStoreDemo --before="python reset.py" 
-`
+> **Info**: The above command runs the linear tests. To run the model-based tests, use the `-c mode=MODEL` option:
+```
+provengo -c mode=MODEL run BookStoreDemo --before="python reset.py"
+```
 
-> **Info**: To improve readability of the output, you can run the `run_stest.ps1` script, which pos-processes the output of the `provengo run` command to make it more readable.
+> **Info**: To improve readability of the output, you can run the `run_test.ps1` script, which pos-processes the output of the `provengo run` command to make it more readable.
 
-3. Run `20` tests in parallel mode and get a report:
+3. Run some tests in model-based mode and get a report:    
 ```powershell
-provengo -c mode=PARALLEL sample --overwrite --size 20 BookStoreDemo
-provengo -c mode=PARALLEL run -s products\run-source\samples.json --before="python reset.py" BookStoreDemo 
-provengo -c mode=PARALLEL report --suites :last BookStoreDemo
+provengo -c mode=MODEL sample --overwrite --size 20 BookStoreDemo
+provengo -c mode=MODEL run -s products\run-source\samples.json --before="python reset.py" BookStoreDemo 
+provengo -c mode=MODEL report --suites :last BookStoreDemo
 ```
 
 > **Info**: To get a more readable output, use the  `run_some_and_report.ps1` script which pos-processes the output of the `provengo run` command to make it more readable.
