@@ -6,7 +6,7 @@ It handles books, users, loans, and holds with in-memory storage.
 
 Routes:
 - /users - User management
-- /books - Book management 
+- /books - Book management
 - /loans - Loan management
 - /holds - Hold management
 """
@@ -28,6 +28,7 @@ users: List[Dict[str, Any]] = []
 books: List[Dict[str, Any]] = []
 loans: List[Dict[str, Any]] = []
 holds: List[Dict[str, Any]] = []
+
 
 # --- Database Management ---
 @app.route("/reset", methods=["POST"])
@@ -74,24 +75,24 @@ def reset_database() -> tuple[Response, int]:
 def add_user() -> tuple[Response, int]:
     """
     Add a new user to the system.
-    
+
     Expected JSON body: {"id": int, "name": str}
     Returns:
         201: User created successfully
         400: Invalid request (missing id or duplicate user)
     """
     user = request.get_json()
-    
+
     # Validate request
     if not user or "id" not in user:
         logger.error("Attempt to add user without id")
         return jsonify({"error": "user id is required"}), 400
-        
+
     # Check for duplicates
     if user.get("id") in [u.get("id") for u in users]:
         logger.error(f"Attempt to add duplicate user: {user}")
         return jsonify({"error": "User already exists"}), 400
-        
+
     # Add user
     users.append(user)
     logger.info(f"Added new user: {user}")
@@ -102,10 +103,10 @@ def add_user() -> tuple[Response, int]:
 def delete_user(user_id: int) -> tuple[Response, int]:
     """
     Delete a user by ID.
-    
+
     Args:
         user_id: ID of the user to delete
-        
+
     Returns:
         200: User deleted successfully
         404: User not found
@@ -133,10 +134,10 @@ def delete_user(user_id: int) -> tuple[Response, int]:
 def search_users() -> Response:
     """
     Search for users.
-    
+
     Query parameters:
         q: Search term (applied to all user fields)
-        
+
     Returns:
         200: List of matching users
     """
@@ -150,7 +151,7 @@ def search_users() -> Response:
 def add_book() -> tuple[Response, int]:
     """
     Add a new book to the system.
-    
+
     Expected JSON body: {"id": int, "title": str}
     Returns:
         201: Book created successfully
@@ -173,10 +174,10 @@ def add_book() -> tuple[Response, int]:
 def delete_book(book_id: int) -> tuple[Response, int]:
     """
     Delete a book by ID.
-    
+
     Args:
         book_id: ID of the book to delete
-        
+
     Returns:
         200: Book deleted successfully
         404: Book not found
@@ -198,7 +199,6 @@ def delete_book(book_id: int) -> tuple[Response, int]:
         logger.warning(f"Cannot delete book {book_id} - has active loans")
         return jsonify({"error": "Cannot delete book with active loans"}), 400
 
-    original_count = len(books)
     books = [book for book in books if book.get("id") != book_id]
 
     logger.info(f"Book {book_id} deleted successfully. Books remaining: {len(books)}")
@@ -209,10 +209,10 @@ def delete_book(book_id: int) -> tuple[Response, int]:
 def search_books() -> Response:
     """
     Search for books.
-    
+
     Query parameters:
         q: Search term (applied to all book fields)
-        
+
     Returns:
         200: List of matching books
     """
@@ -225,10 +225,10 @@ def search_books() -> Response:
 def get_book(book_id: int) -> Response:
     """
     Get detailed information about a specific book.
-    
+
     Args:
         book_id: ID of the book to retrieve
-        
+
     Returns:
         200: Book found
         404: Book not found
@@ -244,7 +244,7 @@ def get_book(book_id: int) -> Response:
 def add_loan() -> tuple[Response, int]:
     """
     Create a new loan record.
-    
+
     Expected JSON body: {"userId": int, "bookId": int}
     Returns:
         201: Loan created successfully
@@ -287,11 +287,11 @@ def add_loan() -> tuple[Response, int]:
 def delete_loan(user_id: int, book_id: int) -> tuple[Response, int]:
     """
     Delete a loan by user ID and book ID.
-    
+
     Args:
         user_id: ID of the user who borrowed the book
         book_id: ID of the borrowed book
-        
+
     Returns:
         200: Loan deleted successfully
         404: Loan not found
@@ -317,11 +317,11 @@ def delete_loan(user_id: int, book_id: int) -> tuple[Response, int]:
 def search_loans() -> Response:
     """
     Search for loans.
-    
+
     Query parameters:
         userId: Filter by user ID
         bookId: Filter by book ID
-        
+
     Returns:
         200: List of matching loans
     """
@@ -340,7 +340,7 @@ def search_loans() -> Response:
 def add_hold() -> tuple[Response, int]:
     """
     Create a new hold record.
-    
+
     Expected JSON body: {"userId": int, "bookId": int}
     Returns:
         201: Hold created successfully
@@ -355,10 +355,10 @@ def add_hold() -> tuple[Response, int]:
 def delete_hold(hold_id: int) -> tuple[Response, int]:
     """
     Delete a hold by ID.
-    
+
     Args:
         hold_id: ID of the hold to delete
-        
+
     Returns:
         200: Hold deleted successfully
     """
@@ -372,10 +372,10 @@ def delete_hold(hold_id: int) -> tuple[Response, int]:
 def search_holds() -> Response:
     """
     Search for holds.
-    
+
     Query parameters:
         q: Search term (applied to all hold fields)
-        
+
     Returns:
         200: List of matching holds
     """
@@ -390,6 +390,6 @@ if __name__ == "__main__":
     HOST = "localhost"
     PORT = 23242
     DEBUG = True
-    
+
     logger.info(f"Starting server on {HOST}:{PORT}")
     app.run(host=HOST, port=PORT, debug=DEBUG)
