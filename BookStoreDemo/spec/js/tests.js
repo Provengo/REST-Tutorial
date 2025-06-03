@@ -38,7 +38,7 @@ switch (mode) {
       addUser(100, "John Doe");
       let book = waitForAnyBookAdded();
       addLoan(100, book.id);
-      ttryToDeleteABookInLoan(book.id, book.title);
+      tryToDeleteABookInLoan(book.id, book.title);
       tryToAddExistingLoan(100, book.id);
       tryToDeleteAUserInLoan(100, "John Doe");
       deleteLoan(100, book.id);
