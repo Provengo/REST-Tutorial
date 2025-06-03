@@ -11,6 +11,7 @@ if ($LASTEXITCODE -eq 0) {
         }
     }
     
+    # Third command - generate report
     provengo -c mode=PARALLEL report --suites :last .\BookStoreDemo\
 } else {
     Write-Error "Sample generation failed. Stopping execution."
