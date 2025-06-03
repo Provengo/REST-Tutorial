@@ -1,6 +1,6 @@
-# Testing REST APIs with Provengo Tutorial
+# Testing REST APIs with Provengo
 
-This tutorial demonstrates how to use Provengo to test REST APIs through a simple Library Management System example.
+This short tutorial demonstrates how to use Provengo to test REST APIs through a simple Library Management System example.
 
 ## System Under Test
 
