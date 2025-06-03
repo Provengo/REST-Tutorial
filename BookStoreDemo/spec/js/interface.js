@@ -55,15 +55,29 @@ function deleteBook(id, title) {
 
 
 /**
- * Try to delete a book that does not exist or is in loan (should fail)
+ * Try to delete a book that does not exist (should fail)
  * @param {number} id - The ID of the book to delete
  * @param {string} title - The title of the book to delete
  */
-function tryToDeleteNonExistentBookOrInLoan(id, title) {
+function tryToDeleteANonExistingBook(id, title) {
     svc.delete("/books/" + id, {
-        expectedResponseCodes: [400, 404], // Expecting 400 for in loan or 404 for non-existent book
+        expectedResponseCodes: [404], // Expecting 400 for in loan or 404 for non-existent book
         parameters: {
-            description: "Verify that we cannot delete a book with id " + id + " and title " + title + " that does not exist or is in loan"
+            description: "Verify that we cannot delete a book with id " + id + " and title " + title + " that does not exist"
+        }
+    });
+}
+
+/**
+ * Try to delete a book  is in loan (should fail)
+ * @param {number} id - The ID of the book to delete
+ * @param {string} title - The title of the book to delete
+ */
+function tryToDeleteABookInLoan(id, title) {
+    svc.delete("/books/" + id, {
+        expectedResponseCodes: [400],
+        parameters: {
+            description: "Verify that we cannot delete a book with id " + id + " and title " + title + " that is in loan"
         }
     });
 }
@@ -135,18 +149,34 @@ function tryToAddExistingUser(id, name) {
 }
 
 /**
- * Attempts to delete a user that does not exist or is in loan (should fail)
+ * Attempts to delete a user that does not exist (should fail)
  * @param {number} id - The ID of the user to delete
  */
-function tryToDeleteNonExistentUserOrInLoan(id, name) {
+function tryToDeleteANonExistingUser(id, name) {
     // Delete user by ID and include the name in the description for clarity
     svc.delete("/users/" + id, {
-        expectedResponseCodes: [400, 404], // Expecting 400 for in loan or 404 for non-existent user
+        expectedResponseCodes: [404],
         parameters: {
-            description: "Verify that we cannot delete a user with id " + id + " and name " + name + " that does not exist or is in loan"
+            description: "Verify that we cannot delete a user with id " + id + " and name " + name + " that does not exist"
         }
     });
 }
+
+
+/**
+ * Attempts to delete a user that is in loan (should fail)
+ * @param {number} id - The ID of the user to delete
+ */
+function tryToDeleteAUserInLoan(id, name) {
+    // Delete user by ID and include the name in the description for clarity
+    svc.delete("/users/" + id, {
+        expectedResponseCodes: [400],
+        parameters: {
+            description: "Verify that we cannot delete a user with id " + id + " and name " + name + " that is in loan"
+        }
+    });
+}
+
 
 /** Loan Operations **/
 /**

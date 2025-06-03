@@ -38,9 +38,9 @@ switch (mode) {
       addUser(100, "John Doe");
       let book = waitForAnyBookAdded();
       addLoan(100, book.id);
-      tryToDeleteNonExistentBookOrInLoan(book.id, book.title);
+      ttryToDeleteABookInLoan(book.id, book.title);
       tryToAddExistingLoan(100, book.id);
-      tryToDeleteNonExistentUserOrInLoan(100, "John Doe");
+      tryToDeleteAUserInLoan(100, "John Doe");
       deleteLoan(100, book.id);
       verifyLoanDoesNotExist(100, book.id);
       deleteUser(100, "John Doe");
@@ -50,9 +50,9 @@ switch (mode) {
       addUser(101, "Jane Smith");
       let book = waitForAnyBookAdded();
       addLoan(101, book.id);
-      tryToDeleteNonExistentBookOrInLoan(book.id, book.title);
+      tryToDeleteABookInLoan(book.id, book.title);
       tryToAddExistingLoan(101, book.id);
-      tryToDeleteNonExistentUserOrInLoan(101, "Jane Smith");
+      tryToDeleteAUserInLoan(101, "Jane Smith");
       deleteLoan(101, book.id);
       deleteUser(101, "Jane Smith");
     });
