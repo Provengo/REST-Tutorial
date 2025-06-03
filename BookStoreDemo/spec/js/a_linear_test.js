@@ -1,7 +1,7 @@
 //@provengo summon rest
 
 // Parse this file only if the mode is "LINEAR"
-if(mode == "LINEAR") {
+if(mode === "LINEAR") {
 
 // A simple linear story for a library loan system
 bthread("Loan API", function () {

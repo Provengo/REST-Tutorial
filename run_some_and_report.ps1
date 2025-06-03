@@ -1,5 +1,5 @@
 # First command - generate samples
-provengo -c mode=PARALLEL sample --overwrite --size 10 BookStoreDemo
+provengo -c mode=MODEL sample --overwrite --size 10 BookStoreDemo
 if ($LASTEXITCODE -eq 0) {
     # Second command - run tests
     provengo -c mode=PARALLEL run -s products\run-source\samples.json --before="python reset.py" BookStoreDemo | 

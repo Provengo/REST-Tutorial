@@ -1,7 +1,7 @@
 //@provengo summon rest
 
-// Parse this file only if the mode is "PARALLEL"
-if (mode == "PARALLEL") {
+// Parse this file only if the mode is "MODEL"
+if (mode === "MODEL") {
 
 
 /** Librarian Actions */ 
@@ -107,4 +107,4 @@ bthread("Loan deletion verification", function () {
   });
 });
 
-} // End of mode check for "PARALLEL"
+} // End of mode check for "MODEL"

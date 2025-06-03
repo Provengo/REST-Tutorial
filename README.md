@@ -57,7 +57,7 @@ This allows test code to synchronize on API operations without dealing with asyn
 
 ## Linear Testing Approach
 
-The simplest way to test our API is with a linear sequence of operations. In `tests.js`, we have a "LINEAR" scenario that demonstrates this:
+The simplest way to test our API is with a linear sequence of operations. In `spec\js\a_linear_test.js.js`, we have a "LINEAR" scenario that demonstrates this:
 
 ```javascript
 bthread("Loan API", function () {
@@ -77,9 +77,9 @@ This linear approach:
 - Provides clear success/failure paths
 - Limited in coverage
 
-## Parallel Testing Approach 
+## Model-Based Testing Approach
 
-To increase test coverage and find edge cases, we can run multiple scenarios in parallel. The "PARALLEL" scenario in `tests.js` demonstrates this:
+To increase test coverage and find edge cases, we can run multiple scenarios in parallel. The model in `spec\js\a_testing_model.js` demonstrates this:
 
 ```javascript
 bthread("Librarian", function () {
