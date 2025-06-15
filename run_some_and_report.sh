@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Step 1: Generate samples
-provengo -c mode=MODEL sample --overwrite --size 5 REST-Tutorial/BookStoreDemo
+provengo -c mode=MODEL sample --overwrite --size 10 REST-Tutorial/BookStoreDemo
 if [ $? -eq 0 ]; then
     # Step 2: Run tests
     provengo -c mode=MODEL run -s products/run-source/samples.json --before=REST-Tutorial/reset.sh REST-Tutorial/BookStoreDemo | sed -E 's/(.*) Selected: \[.*description:"([^"]+).*/\1 Selected: [\2]/'
