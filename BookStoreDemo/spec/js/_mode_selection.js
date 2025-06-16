@@ -9,7 +9,7 @@
 
 // "LINEAR" or "MODEL" mode selection
 with (Main.options.getOptional('mode', Packages.java.lang.String)) {
-  const mode = isPresent() ? get() : "LINEAR"; // Default to LINEAR if not specified
+  const mode = isPresent() ? get() : "MODEL"; // Default to MODEL if not specified
 }
 
 bp.log.info("Starting BookStoreDemo test with mode: " + mode);
