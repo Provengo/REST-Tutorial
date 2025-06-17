@@ -12,7 +12,7 @@ if [ $? -eq 0 ]; then
     # Step 2: Execute the generated test cases
     #  run              : Execute test cases
     #  -s samples.json  : Use the previously generated samples
-    #  --before=reset.sh: Clean database before each test
+    #  --before=reset.sh: Reset the database before each test
     #  | sed ...        : Clean up output formatting
     provengo run -s products/run-source/samples.json --before=REST-Tutorial/reset.sh REST-Tutorial/BookStoreDemo | sed -E 's/(.*) Selected: \[.*description:"([^"]+).*/\1 Selected: [\2]/'
 
