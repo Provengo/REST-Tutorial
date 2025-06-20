@@ -535,7 +535,7 @@ function matchDeleteBook(id, title) {
         if (!e.data.parameters) return false;
         if (!e.data.parameters.description) return false;
 
-        return e.data.parameters.description === "Delete book with id " + id + " and title " + title;
+        return e.data.parameters.description === "Delete a book with id " + id + " and title " + title;
     });
 }
 
